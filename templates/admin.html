@@ -1,435 +1,191 @@
-{% extends "base.html" %}
-{% block body_class %}admin-page{% endblock %}
+{% extends "layout.html" %}
 {% block content %}
 
-<style>
-/* 🎨 STYLE MODALE ACTIONS (version harmonisée) */
-.modal-section {
-  margin-bottom: 18px;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
-}
+<h1 class="page-title">Administration SSIAP</h1>
 
-.modal-section h4 {
-  margin: 6px 0 10px;
-  color: #555;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
+<div class="admin-container">
 
-.modal-section .btn {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 15px;
-}
+    <!-- ===========================================
+         TABLEAU DES CANDIDATS
+    ============================================ -->
+    <h2>Candidats inscrits</h2>
 
-/* 🎨 Couleurs harmonisées */
-.btn.primary { background:#007bff; color:white; }
-.btn.green { background:#28a745; color:white; }
-.btn.gold { background:#f4c45a; color:#111; }
-.btn.blue { background:#17a2b8; color:white; }
-.btn.grey { background:#6c757d; color:white; }
-.btn.dark { background:#111; color:white; }
-.btn.danger { background:#dc3545; color:white; }
-.btn.black { background:#333; color:white; }
+    {% if data.candidats|length == 0 %}
+        <p>Aucun candidat pour le moment.</p>
+    {% else %}
+    <div class="table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Date</th>
+                    <th>Documents</th>
+                    <th>Statut</th>
+                    <th>Commentaire</th>
+                    <th>Suppr.</th>
+                </tr>
+            </thead>
+            <tbody>
 
-/* ✏️ Zone de commentaire */
-#commentBox {
-  width:100%;
-  border:1px solid #ccc;
-  border-radius:8px;
-  padding:8px;
-  font-size:14px;
-  resize:none;
-}
-.comment-save {
-  display:flex;
-  justify-content:space-between;
-  margin-top:8px;
-}
-</style>
+                {% for c in data.candidats %}
+                <tr data-id="{{ c.id }}">
+                    <td>{{ c.nom }}</td>
+                    <td>{{ c.prenom }}</td>
+                    <td>{{ c.email }}</td>
+                    <td>{{ c.telephone }}</td>
+                    <td>{{ c.date_inscription }}</td>
 
+                    <td>
+                        {% if c.fichiers.identite %}
+                            <a href="/uploads/{{ c.fichiers.identite }}" target="_blank">Identité</a><br>
+                        {% endif %}
 
-<div class="admin-wrapper">
+                        {% if c.fichiers.certificat %}
+                            <a href="/uploads/{{ c.fichiers.certificat }}" target="_blank">Certificat</a><br>
+                        {% endif %}
 
-  <!-- 🔝 En-tête -->
-<header class="admin-header">
-  <h2>📋 Administration — Pré-inscriptions BTS 2026</h2>
+                        {% if c.fichiers.test_francais %}
+                            <a href="/uploads/{{ c.fichiers.test_francais }}" target="_blank">Test FR</a><br>
+                        {% endif %}
 
-  <button class="btn primary" id="btnPortal">
-  🔒 Gestion Portail
-</button>
+                        {% if c.fichiers.photo %}
+                            <a href="/uploads/{{ c.fichiers.photo }}" target="_blank">Photo</a><br>
+                        {% endif %}
+                    </td>
 
-    <button class="btn gold" id="btnMassReconfirm" style="margin-left:10px;">
-    📢 Envoyer reconfirmation à tous
-  </button>
+                    <td>
+                        <select class="select-statut" data-field="statut">
+                            <option value="en_attente" {% if c.statut == "en_attente" %}selected{% endif %}>En attente</option>
+                            <option value="complet" {% if c.statut == "complet" %}selected{% endif %}>Complet</option>
+                            <option value="incomplet" {% if c.statut == "incomplet" %}selected{% endif %}>Incomplet</option>
+                        </select>
+                    </td>
 
-  <div class="admin-actions">
-    <a href="{{ url_for('parcoursup.dashboard') }}" class="btn secondary" style="display:inline-flex;align-items:center;gap:6px;">
-      📋 Gestion Parcoursup
-    </a>
+                    <td contenteditable="true" data-field="commentaire">{{ c.commentaire }}</td>
 
-    <a href="{{ url_for('admin_export_csv') }}" class="btn secondary">📄 Export CSV</a>
-    <a href="{{ url_for('admin_export_json') }}" class="btn secondary">💾 Export JSON</a>
+                    <td>
+                        <a class="delete-btn" href="/admin/delete/{{ c.id }}" onclick="return confirm('Supprimer ce candidat ?')">🗑️</a>
+                    </td>
+                </tr>
+                {% endfor %}
 
-    <form action="{{ url_for('admin_clear_db') }}" method="post" style="display:inline"
-          onsubmit="return confirm('⚠️ Êtes-vous sûr de vouloir tout effacer ? Cette action est irréversible.')">
-      <button class="btn danger">🗑️ Vider la base</button>
-    </form>
-  </div>
-</header>
-
-
-  <!-- 🔎 Barre de filtres -->
-  <form method="get" action="{{ url_for('admin') }}" class="filter-bar">
-    <input type="text" 
-       id="searchBTS" 
-       name="q" 
-       placeholder="🔍 Rechercher (nom, prénom, mail...)" 
-       value="{{ request.args.get('q','') }}">
-
-
-    <select name="bts">
-      <option value="">BTS (tous)</option>
-      <option value="MOS">MOS</option>
-      <option value="MCO">MCO</option>
-      <option value="PI">PI</option>
-      <option value="CI">CI</option>
-      <option value="NDRC">NDRC</option>
-      <option value="CG">CG</option>
-    </select>
-
-    <select name="mode">
-      <option value="">Mode (tous)</option>
-      <option value="presentiel">Présentiel</option>
-      <option value="distanciel">Distanciel</option>
-    </select>
-
-    <select name="statut">
-      <option value="">Statut (tous)</option>
-      {% for key,label,color in statuts %}
-        <option value="{{ key }}">{{ label }}</option>
-      {% endfor %}
-    </select>
-
-    <select name="label">
-      <option value="">Étiquette</option>
-      <option value="APS">APS</option>
-      <option value="AUT">AUT OK</option>
-      <option value="CHEQUE">Chèque OK</option>
-    </select>
-
-    <label style="display:flex;align-items:center;gap:4px;">
-  <input type="checkbox" name="relances" value="1" {% if request.args.get('relances') %}checked{% endif %}>
-  🔔 Relancés uniquement
-</label>
-
-    <button class="btn primary" type="submit">Filtrer</button>
-    <a class="btn secondary" href="{{ url_for('admin') }}">↻ Réinitialiser</a>
-  </form>
-
-  <!-- 📊 Tableau -->
-  <div class="table-container">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>BTS</th>
-          <th>Mode</th>
-          <th>Téléphone</th>
-          <th>Email</th>
-          <th>Statut</th>
-          <th>Étiquettes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rows %}
-        <tr data-id="{{ r.id }}" data-nouveau="{{ r.nouveau_doc }}">
-          <td contenteditable="true" data-field="nom">{{ r.nom }}</td>
-          <td contenteditable="true" data-field="prenom">{{ r.prenom }}</td>
-          <td contenteditable="true" data-field="bts">{{ r.bts }}</td>
-          <td contenteditable="true" data-field="mode">{{ r.mode }}</td>
-          <td contenteditable="true" data-field="tel">{{ r.tel }}</td>
-          <td contenteditable="true" data-field="email">{{ r.email }}</td>
-          <td>
-            <select data-field="statut" class="status-select" data-statut="{{ r.statut or 'preinscription' }}">
-              {% for key,label,color in statuts %}
-                <option value="{{ key }}" {% if r.statut==key %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </td>
-     <td class="etiquettes">
-  <label><input type="checkbox" class="chk" data-field="label_aps" {% if r.label_aps %}checked{% endif %}> APS</label>
-  <label><input type="checkbox" class="chk" data-field="label_aut_ok" {% if r.label_aut_ok %}checked{% endif %}> AUT OK</label>
-  <label><input type="checkbox" class="chk" data-field="label_cheque_ok" {% if r.label_cheque_ok %}checked{% endif %}> Chèque OK</label>
-  <label><input type="checkbox" class="chk" data-field="label_ypareo" {% if r.label_ypareo %}checked{% endif %}> YPAREO</label>
-  <label><input type="checkbox" class="chk" data-field="label_carte_etudiante" {% if r.label_carte_etudiante %}checked{% endif %}> Carte étudiante</label>
-</td>
-
-<td style="text-align:center; white-space:nowrap;">
-  <a href="{{ url_for('admin_espace_candidat', cid=r.id) }}" 
-     class="btn small" 
-     target="_blank"
-     style="background:#f4c45a;color:#111;font-weight:600;">
-     👁️ Espace
-  </a>
-
-  <button class="btn small action-btn" 
-          data-id="{{ r.id }}" 
-          data-commentaire="{{ r.commentaires|default('')|escape }}">
-    ⚙️ Actions
-  </button>
-
-  {% if r.nouveau_doc %}
-    <span style="color:#28a745;font-weight:600;margin-left:8px;">📥 Nouveau document déposé</span>
-  {% endif %}
-{% if r.last_relance %}
-  {% set days_diff = ((now() - r.last_relance|to_datetime).days) if r.last_relance else 0 %}
-  {% if days_diff < 3 %}
-    {% set color = '#28a745' %}
-  {% elif days_diff < 7 %}
-    {% set color = '#f4c45a' %}
-  {% else %}
-    {% set color = '#dc3545' %}
-  {% endif %}
-
-  <span
-    style="
-      background:{{ color }};
-      color:white;
-      padding:2px 6px;
-      border-radius:6px;
-      font-size:12px;
-      margin-left:6px;
-      display:inline-block;"
-    title="Dernière relance : {{ r.last_relance[:10] }} à {{ r.last_relance[11:16] }}">
-    🔔 Relancé
-  </span>
-{% endif %}
-
-</td>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 
 
 
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <!-- ===========================================
+         BLOC CONFORMITÉ ARRÊTÉ DU 2 MAI 2005
+    ============================================ -->
+    <h2>Conformité - Arrêté du 2 mai 2005</h2>
+
+    <div class="conformite-wrapper">
+
+        {% set conf = data.conformite %}
+
+        <table class="conformite-table">
+            <thead>
+                <tr>
+                    <th>Exigence réglementaire</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <!-- Préfecture avisée -->
+                <tr>
+                    <td>Préfecture avisée 2 mois avant</td>
+                    <td>
+                        <div class="conf-btns" data-champ="prefecture_avis">
+                            <button class="conf-btn {% if conf.prefecture_avis=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.prefecture_avis=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.prefecture_avis=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Test de français -->
+                <tr>
+                    <td>Test de français validé pour tous les candidats</td>
+                    <td>
+                        <div class="conf-btns" data-champ="test_francais">
+                            <button class="conf-btn {% if conf.test_francais=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.test_francais=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.test_francais=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Certificats médicaux -->
+                <tr>
+                    <td>Certificats médicaux collectés</td>
+                    <td>
+                        <div class="conf-btns" data-champ="certificats_medicaux">
+                            <button class="conf-btn {% if conf.certificats_medicaux=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.certificats_medicaux=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.certificats_medicaux=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Identités -->
+                <tr>
+                    <td>Pièces d'identité fournies par tous</td>
+                    <td>
+                        <div class="conf-btns" data-champ="identites">
+                            <button class="conf-btn {% if conf.identites=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.identites=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.identites=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Locaux -->
+                <tr>
+                    <td>Locaux et matériel conformes</td>
+                    <td>
+                        <div class="conf-btns" data-champ="locaux">
+                            <button class="conf-btn {% if conf.locaux=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.locaux=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.locaux=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Formateurs -->
+                <tr>
+                    <td>Formateurs déclarés à la préfecture</td>
+                    <td>
+                        <div class="conf-btns" data-champ="formateurs">
+                            <button class="conf-btn {% if conf.formateurs=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.formateurs=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.formateurs=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Planning -->
+                <tr>
+                    <td>Planning et feuilles d'émargement prêts</td>
+                    <td>
+                        <div class="conf-btns" data-champ="planning">
+                            <button class="conf-btn {% if conf.planning=='conforme' %}green{% endif %}" data-value="conforme">Conforme</button>
+                            <button class="conf-btn {% if conf.planning=='a_venir' %}orange{% endif %}" data-value="a_venir">À venir</button>
+                            <button class="conf-btn {% if conf.planning=='non_conforme' %}red{% endif %}" data-value="non_conforme">Non conforme</button>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
 </div>
-
-<!-- ⚙️ MODALE D’ACTIONS (version harmonisée) -->
-<div id="actionsModal" class="modal hidden">
-  <div class="modal-content">
-    <h3 style="text-align:center;margin-bottom:10px;">⚙️ Actions</h3>
-
-    <!-- SECTION : Dossier -->
-    <div class="modal-section">
-      <h4>📄 Dossier</h4>
-      <button id="printLink" class="btn pdf">🖨️ Imprimer la fiche PDF</button>
-      <button id="deleteBtn" class="btn danger">🗑️ Supprimer le dossier</button>
-    </div>
-
-    <!-- SECTION : Communication -->
-    <div class="modal-section">
-      <h4>💬 Communication</h4>
-      <button id="reconfirmBtn" class="btn primary">🔁 Reconfirmation inscription</button>
-      <button id="renvoiMailsBtn" class="btn blue">📧 Renvoi mails</button>
-      <button id="relancesBtn" class="btn green">📲 Relances</button>
-      <button id="logsBtn" class="btn grey">🕓 Logs</button>
-    </div>
-
-    <!-- SECTION : Documents -->
-    <div class="modal-section">
-      <h4>📎 Documents</h4>
-      <button id="openFilesFromActions" class="btn dark">📎 Pièces justificatives</button>
-      <button id="generationDocsBtn" class="btn gold">🧾 Génération documents</button>
-    </div>
-
-    <!-- SECTION : Commentaires -->
-    <div class="modal-section">
-      <h4>🗒️ Commentaires</h4>
-      <textarea id="commentBox" rows="3" placeholder="Ajouter ou modifier un commentaire..."></textarea>
-      <div class="comment-save">
-        <button id="saveCommentBtn" class="btn gold">💾 Enregistrer</button>
-        <button class="btn black" onclick="closeActionsModal()">Fermer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- 📎 MODALE – PIÈCES JUSTIFICATIVES -->
-<div id="filesModal" class="modal hidden">
-  <div class="modal-content" style="width:750px;max-height:90vh;overflow-y:auto;">
-    <h3>📎 Pièces justificatives</h3>
-
-    <div id="filesList" class="files-list">
-      <p>Chargement des documents...</p>
-    </div>
-
-    <hr>
-
-    <div id="nonConformesBlock" style="background:#fff8e1;padding:10px 15px;border-radius:8px;margin-top:10px;">
-      <h4 style="margin-top:0;">⚠️ Pièces non conformes</h4>
-      <ul id="nonConformesList" style="margin:0;padding-left:20px;font-size:14px;color:#c00;">
-        <li>Aucune pièce non conforme</li>
-      </ul>
-    </div>
-
-    <div style="margin-top:15px;">
-      <label for="commentaireNonConforme" style="font-weight:600;">🗒️ Commentaire (optionnel)</label><br>
-      <textarea id="commentaireNonConforme" rows="3" style="width:100%;border-radius:6px;padding:8px;border:1px solid #ccc;"></textarea>
-    </div>
-
-    <div class="modal-actions" style="margin-top:15px;">
-      <button id="notifyNonConformesBtn" class="btn danger">📩 Enregistrer et notifier le candidat</button>
-      <button id="downloadAllBtn" class="btn pdf">⬇️ Télécharger toutes les pièces</button>
-      <button id="markDocsCheckedBtn" class="btn success">✅ Nouveau document contrôlé</button>
-      <button id="mergeDocsBtn" class="btn secondary">💾 Enregistrer les nouveaux documents</button>
-      <button class="btn" onclick="closeFilesModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-<!-- 📧 MODALE — RENVOI MAILS (mail + SMS) -->
-<div id="renvoiMailsModal" class="modal hidden">
-  <div class="modal-content" style="width:600px;max-width:95vw;">
-    <h3>📧 Renvoi mails</h3>
-    <p>Choisissez le <strong>mail + SMS</strong> à renvoyer au candidat :</p>
-    <div class="modal-actions" style="flex-direction:column;align-items:stretch;gap:8px;">
-      <button class="btn secondary renvoi-option" data-action="candidature_validee">
-        ✅ Renvoi mail + SMS Candidature validée
-      </button>
-      <button class="btn secondary renvoi-option" data-action="inscription_confirmee">
-        📩 Renvoi mail + SMS Inscription confirmée
-      </button>
-      <button class="btn secondary renvoi-option" data-action="reconfirmation">
-        🔁 Renvoi mail + SMS Reconfirmer inscription
-      </button>
-      <button class="btn secondary renvoi-option" data-action="reconfirmee">
-        ✅ Renvoi mail + SMS Inscription re-confirmée
-      </button>
-      <button class="btn secondary renvoi-option" data-action="docs_non_conformes">
-        🚫 Renvoi mail + SMS Docs non conformes
-      </button>
-    </div>
-    <div class="comment-save">
-      <button class="btn" onclick="closeRenvoiMailsModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-
-<div id="relancesModal" class="modal hidden">
-  <div class="modal-content" style="width:600px;max-width:95vw;">
-    <h3>📲 Relances</h3>
-    <p>Choisissez la <strong>relance (mail + SMS)</strong> à envoyer :</p>
-    <div class="modal-actions" style="flex-direction:column;align-items:stretch;gap:8px;">
-      <button class="btn success relance-option" data-action="candidature_validee">
-        🔔 Relance candidature validée (le candidat n’a pas confirmé son inscription)
-      </button>
-      <button class="btn success relance-option" data-action="reconfirmation">
-        🔁 Relance reconfirmation (reconfirmation demandée mais non validée)
-      </button>
-      <button class="btn success relance-option" data-action="docs_non_conformes">
-        🚫 Relance docs non conformes (documents non renvoyés)
-      </button>
-    </div>
-    <div class="comment-save">
-      <button class="btn" onclick="closeRelancesModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- 🕓 MODALE — LOGS -->
-<div id="logsModal" class="modal hidden">
-  <div class="modal-content" style="width:700px;max-height:90vh;overflow-y:auto;">
-    <h3>🕓 Historique des actions</h3>
-    <ul id="logsList" style="list-style:none;padding:0;margin:0;font-size:14px;">
-      <li>Chargement des logs...</li>
-    </ul>
-    <div class="comment-save">
-      <button class="btn" onclick="closeLogsModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-<!-- 🧾 MODALE — GÉNÉRATION DOCUMENTS -->
-<div id="generationDocsModal" class="modal hidden">
-  <div class="modal-content" style="width:600px;">
-    <h3>🧾 Génération de documents</h3>
-    <p>Choisissez le document à générer pour ce candidat :</p>
-
-<div class="modal-actions">
-  <button id="generateCertificatDistBtn" class="btn pdf">📜 Générer certificat Distanciel</button>
-  <button id="generateCertificatPresBtn" class="btn pdf">📜 Générer certificat Présentiel</button>
-  <button id="sendCertificatDistBtn" class="btn secondary">✉️ Envoyer certificat Distanciel</button>
-  <button id="sendCertificatPresBtn" class="btn secondary">✉️ Envoyer certificat Présentiel</button>
-</div>
-
-
-    <div class="comment-save">
-      <button class="btn" onclick="closeGenerationDocsModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-<!-- 🔐 MODALE — GESTION PORTAIL -->
-<div id="portalModal" class="modal hidden">
-  <div class="modal-content" style="width:480px;">
-    <h3>🔐 Gestion du portail d’inscriptions</h3>
-    <p>Choisissez l’état actuel du portail :</p>
-
-    <div style="margin:15px 0;">
-      <label><input type="radio" name="portalStatus" value="open"> 🟢 Ouvrir les inscriptions</label><br>
-      <label><input type="radio" name="portalStatus" value="closed"> 🔴 Fermer les inscriptions</label>
-    </div>
-
-    <div id="portalMessageBlock" style="display:none;margin-top:10px;">
-  <label for="portalMessage"><strong>Message affiché sur la page d’accueil :</strong></label><br>
-  <select id="portalMessage" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;">
-    <option value="Les pré-inscriptions sont actuellement fermées. Ouverture prochainement.">🕒 Pré-inscriptions actuellement fermées</option>
-    <option value="Notre site internet est actuellement en maintenance technique. Merci de revenir plus tard.">🛠️ Maintenance technique en cours</option>
-  </select>
-
-  <!-- 🗒️ Nouveau champ commentaire -->
-  <div style="margin-top:10px;">
-    <label for="portalComment"><strong>🗒️ Commentaire (optionnel) :</strong></label><br>
-    <textarea id="portalComment" rows="2" style="width:100%;border-radius:6px;padding:8px;border:1px solid #ccc;" placeholder="Exemple : maintenance du 31/10 au 02/11, mise à jour des formulaires..."></textarea>
-  </div>
-</div>
-
-    <div class="modal-actions" style="margin-top:20px;">
-      <button id="savePortalBtn" class="btn primary">💾 Enregistrer</button>
-      <button class="btn" onclick="closePortalModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
-    <!-- 🧠 Panneau de contrôle auto-refresh -->
-<div id="liveControl" style="
-  position:fixed;bottom:20px;left:20px;
-  background:#fff;border:1px solid #ddd;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-  border-radius:10px;padding:10px 14px;
-  font-size:14px;font-family:'Segoe UI',sans-serif;
-  z-index:9999;display:flex;align-items:center;gap:10px;">
-  <span id="liveStatus" style="color:#28a745;">🟢 Auto ON</span>
-  <button id="toggleLive" style="border:none;background:#f4c45a;color:#111;padding:5px 10px;border-radius:6px;cursor:pointer;">⏸️ Pause</button>
-  <button id="manualRefresh" style="border:none;background:#007bff;color:#fff;padding:5px 10px;border-radius:6px;cursor:pointer;">🔁 Rafraîchir</button>
-  <span id="countdown" style="color:#555;font-weight:600;">(60s)</span>
-</div>
-
 
 {% endblock %}
