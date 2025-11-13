@@ -1,30 +1,25 @@
 services:
   - type: web
-    name: bts-preinscriptions-2026
-    env: python
+    name: plateforme-ssiap
+    runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:10000 app:app
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT"
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
       - key: SECRET_KEY
-        generateValue: true
-      - key: MAIL_SMTP_HOST
-        value: smtp.gmail.com
-      - key: MAIL_SMTP_PORT
-        value: "587"
-      - key: MAIL_USERNAME
-        sync: false
-      - key: MAIL_PASSWORD
-        sync: false
-      - key: MAIL_FROM
-        value: ecole@integraleacademy.com
-      - key: BASE_URL
-        value: https://your-render-app.onrender.com
+        value: "change_me_secret"
+      - key: ADMIN_LOGIN
+        value: "admin"
       - key: ADMIN_PASSWORD
+        value: "ssiap2025"
+      - key: ADMIN_EMAIL
         sync: false
-    autoDeploy: true
-    healthCheckPath: /health
+      - key: ADMIN_PASS
+        sync: false
+
     disk:
-      name: data
-      mountPath: /opt/render/project/src/data
+      name: uploads-disk
+      mountPath: /static/uploads
       sizeGB: 1
