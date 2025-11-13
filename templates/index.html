@@ -1,785 +1,109 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
 {% block content %}
 
-{% if portal_closed %}
-  <div style="max-width:700px;margin:80px auto;padding:40px;text-align:center;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
-    <h2 style="color:#222;margin-bottom:20px;">⚠️ Portail temporairement indisponible</h2>
-    <p style="font-size:1.1em;color:#444;line-height:1.6;">
-      {{ portal_message or "Les pré-inscriptions sont actuellement fermées. Veuillez réessayer plus tard." }}
-    </p>
-
-    {% if portal_comment %}
-      <p style="margin-top:15px;font-size:0.95em;color:#555;background:#fff8e1;border-left:4px solid #f4c45a;padding:10px 15px;border-radius:8px;display:inline-block;text-align:left;">
-        🗒️ <em>{{ portal_comment }}</em>
-      </p>
-    {% endif %}
-  </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.querySelector(".form-container");
-      if (form) form.style.display = "none";
-    });
-  </script>
-{% endif %}
-
+<h1 class="page-title">Inscription à la formation SSIAP</h1>
 
 <div class="form-container">
-  <h2>📝 Pré-inscriptions BTS 2026</h2>
-  
-  <div class="notice">
-    <p>Vous allez compléter votre dossier de pré-inscription pour intégrer l’un de nos BTS à partir de septembre 2026.</p>
-    <ol>
-      <li>Complétez ce formulaire. Vous recevrez ensuite un <strong>accusé de réception</strong> avec votre numéro de dossier.</li>
-      <li>Dans un délai de 15 jours, nous étudierons votre dossier et vous recevrez notre <em>avis d’admission</em>.</li>
-      <li>En cas d’avis favorable, vous pourrez confirmer votre inscription en cliquant sur <strong>« Je confirme mon inscription »</strong>.</li>
-    </ol>
-    <p class="help">Besoin d’aide ? <a href="https://assistance-alw9.onrender.com/" target="_blank">Cliquez ici</a> ou appelez le <strong>04 22 47 07 68</strong>.</p>
-  </div>
 
-  <!-- ✅ Message de confirmation dynamique -->
-<div id="flashMessage" class="flash-message hidden"></div>
-
-  <!-- 🚀 Écran d’introduction -->
-<div id="intro-screen" class="intro-screen">
-  <h2>🕒 Avant de commencer votre pré-inscription</h2>
-  <p>Cette démarche dure environ <strong>5 minutes</strong>.</p>
-  <p>Merci de préparer à portée de main :</p>
-  <ul>
-    <li>🪪 Votre <strong>pièce d’identité (recto/verso)</strong></li>
-    <li>💳 Votre <strong>carte Vitale</strong></li>
-    <li>📸 Une <strong>photo d’identité</strong></li>
-    <li>📄 Votre <strong>CV</strong></li>
-    <li>🖋️ Votre <strong>lettre de motivation</strong></li>
-  </ul>
-  <p>🔒 Toutes vos données sont sauvegardées et sécurisées.</p>
-  <button id="startForm" class="btn primary" style="margin-top:15px;">🚀 Commencer ma pré-inscription</button>
-</div>
-
-  <style>
-.intro-screen {
-  text-align:center;
-  background:#fff8e1;
-  border-left:5px solid #f4c45a;
-  border-radius:10px;
-  padding:30px;
-  margin-bottom:30px;
-  animation: fadeIn 0.4s ease;
-}
-.intro-screen ul {
-  list-style:none;
-  padding:0;
-  margin:10px 0 20px 0;
-}
-.intro-screen li {
-  font-size:16px;
-  margin:5px 0;
-}
-@keyframes fadeIn {
-  from { opacity:0; transform:translateY(-10px); }
-  to { opacity:1; transform:translateY(0); }
-}
-</style>
-
-
-  <form id="inscriptionForm" class="tabs-form" method="post" action="{{ url_for('submit') }}" enctype="multipart/form-data">
+    <!-- ==========================
+         ONGLET DE NAVIGATION
+    =========================== -->
     <div class="tabs">
-      <button type="button" data-tab="tab1" class="active">🪪 Infos générales</button>
-      <button type="button" data-tab="tab2">🎓 Formation</button>
-      <button type="button" data-tab="tab3">🧩 Infos complémentaires</button>
-      <button type="button" data-tab="tab4">💬 Projet motivé</button>
-      <button type="button" data-tab="tab5">📎 Pièces justificatives</button>
+        <button class="tab-btn active" data-step="1">Étape 1<br><span>Identité</span></button>
+        <button class="tab-btn" data-step="2">Étape 2<br><span>Documents</span></button>
+        <button class="tab-btn" data-step="3">Étape 3<br><span>Résumé</span></button>
     </div>
 
-      <!-- 🔢 Barre de progression -->
-<div class="progress-container">
-  <div class="progress-bar" id="progressBar"></div>
-</div>
+    <!-- ==========================
+         FORMULAIRE
+    =========================== -->
+    <form id="ssiapForm" method="POST" action="/submit" enctype="multipart/form-data">
 
-  <div class="progress-info" id="progressInfo">Étape 1 sur 5</div>
+        <!-- ==========================
+             ÉTAPE 1 : IDENTITÉ
+        =========================== -->
+        <div class="tab-content step-1 active">
 
-    <!-- 🪪 Étape 1 -->
-    <div id="tab1" class="tab active">
-      <div class="grid">
-        <label>Nom <input name="nom" required></label>
-        <label>Prénom <input name="prenom" required></label>
-        <label>Sexe
-          <select name="sexe" required>
-            <option value="">—</option>
-            <option>Homme</option>
-            <option>Femme</option>
-          </select>
-        </label>
-        <label>Date de naissance <input type="date" name="date_naissance" required></label>
-        <!-- Bloc Responsable Légal (caché par défaut) -->
-<div id="bloc-resp-legal" style="display:none; margin-top:20px; background:#fff8e1; padding:15px; border-left:4px solid #f4c45a; border-radius:8px;">
-  <h4>👨‍👩‍👧 Informations du responsable légal</h4>
-  <p style="font-size:14px; color:#555;">⚠️ Vous êtes mineur(e) à la date d’inscription — merci d’indiquer les coordonnées du responsable légal :</p>
-  
-  <div class="grid">
-    <label>Nom du responsable légal <input name="resp_nom"></label>
-    <label>Prénom du responsable légal <input name="resp_prenom"></label>
-    <label>Email du responsable légal <input type="email" name="resp_email"></label>
-    <label>Téléphone du responsable légal <input name="resp_tel" pattern="\d{10}"></label>
-  </div>
-  <input type="hidden" name="est_mineur" id="est_mineur" value="0">
-</div>
+            <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" name="nom" required>
+            </div>
 
-        <label>Ville de naissance <input name="ville_naissance" required></label>
-        <label>Code postal de naissance <input name="cp_naissance" required></label>
-        <label>Pays de naissance <input name="pays_naissance" required></label>
-<label>Numéro de sécurité sociale
-  <input 
-    name="num_secu"
-    id="num_secu"
-    type="text"
-    inputmode="text"
-    maxlength="15"
-    required
-    placeholder="Ex : 2842A12345678946"
-    oninput="this.value = this.value.toUpperCase().replace(/[^0-9AB]/g, '').slice(0,15); verifierNumSecu();"
-  >
-  <small id="numSecuHelp" style="color:#666;font-size:13px;">15 caractères attendus (chiffres ou A/B pour la Corse)</small>
-</label>
+            <div class="form-group">
+                <label>Prénom *</label>
+                <input type="text" name="prenom" required>
+            </div>
 
+            <div class="form-group">
+                <label>Date de naissance *</label>
+                <input type="date" name="naissance" required>
+            </div>
 
-        <label>Email <input type="email" name="email" required></label>
-        <label>Confirmer l’email <input type="email" name="email_confirm" required></label>
-        <label>Téléphone portable <input name="tel" pattern="\d{10}" required></label>
-        <label>Adresse postale <input name="adresse" required></label>
-        <label>Code postal <input name="cp" required></label>
-        <label>Ville <input name="ville" required></label>
-      </div>
-      <div class="actions nav-global">
-  <button type="button" class="btn primary next">➡️ Étape suivante</button>
-  <button type="button" class="btn save">💾 Enregistrer et reprendre plus tard</button>
-</div>
+            <div class="form-group">
+                <label>Téléphone *</label>
+                <input type="tel" name="telephone" required>
+            </div>
 
-    </div>
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required>
+            </div>
 
-    <!-- 🎓 Étape 2 -->
-<div id="tab2" class="tab">
-  <label>Formation souhaitée
-    <select name="bts" required>
-      <option value="">—</option>
-      <option value="MOS">BTS MOS (Sécurité)</option>
-      <option value="MCO">BTS MCO</option>
-      <option value="PI">BTS PI</option>
-      <option value="CI">BTS CI</option>
-      <option value="NDRC">BTS NDRC</option>
-      <option value="CG">BTS Comptabilité-Gestion</option>
-    </select>
-  </label>
-
-  <!-- Bloc d’informations sur la formation sélectionnée -->
-<div id="formation-info" 
-     style="display:none; margin-top:15px; padding:15px; border-left:4px solid #f4c45a; background:#fff8e1; border-radius:10px;">
-</div>
-
-
-
-<div class="formation-mode" style="margin-top:20px;">
-  <h3>🎯 Je souhaite suivre la formation :</h3>
-  <p style="font-size:15px; color:#444; margin-bottom:15px;">
-    Deux formats sont possibles selon votre situation : le même diplôme, la même exigence, 
-    mais deux façons de suivre votre parcours.
-  </p>
-
-  <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
-    <!-- 🧑‍🏫 Présentiel -->
-    <label class="mode-btn presentiel" style="flex:1; min-width:260px; max-width:360px; background:#fff3cd; border:2px solid #f4c45a; border-radius:14px; padding:24px; text-align:center; cursor:pointer; transition:all .3s ease;">
-      <input type="radio" name="mode" value="presentiel" style="display:none;">
-      <div style="font-size:20px; font-weight:600;">🧑‍🏫 Formation en présentiel</div>
-      <p style="margin:10px 0 0; font-size:15px; color:#333;">
-        Suivez vos cours dans les locaux <strong>Intégrale Academy</strong><br>
-        à <strong>Puget-sur-Argens (Var – 83)</strong>.<br>
-        Accompagnement individuel, vie de promo et immersion professionnelle.
-      </p>
-    </label>
-
-    <!-- 💻 Distanciel -->
-    <label class="mode-btn distanciel" style="flex:1; min-width:260px; max-width:360px; background:#eaf7ff; border:2px solid #007bff33; border-radius:14px; padding:24px; text-align:center; cursor:pointer; transition:all .3s ease;">
-      <input type="radio" name="mode" value="distanciel" style="display:none;">
-      <div style="font-size:20px; font-weight:600;">💻 Formation 100 % à distance</div>
-      <p style="margin:10px 0 0; font-size:15px; color:#333;">
-        Suivez la même formation depuis chez vous, en <strong>visioconférence en direct</strong><br>
-        avec nos enseignants. Un suivi personnalisé et un accompagnement à distance de qualité.
-      </p>
-    </label>
-  </div>
-
-  <div style="margin-top:18px; background:#fff8e1; border-left:4px solid #f4c45a; padding:12px 18px; border-radius:10px;">
-    <p style="margin:0; font-size:15px; color:#444;">
-      🧾 <strong>À savoir :</strong> quel que soit le format choisi, 
-      <strong>l’examen final</strong> se déroulera en fin de 2ᵉ année, 
-      soit au sein de <strong>l’académie de Paris</strong>, 
-      soit au sein de <strong>l’académie de Nice</strong>.
-    </p>
-  </div>
-</div>
-
-<style>
-  /* 🌟 Effets visuels Intégrale Academy */
-  .mode-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-  }
-  .mode-btn.presentiel:hover {
-    background:#fff0b3;
-    border-color:#f4c45a;
-  }
-  .mode-btn.distanciel:hover {
-    background:#d6eeff;
-    border-color:#007bff66;
-  }
-  .mode-btn.selected {
-    outline:3px solid #f4c45a;
-    background:#fff8e1 !important;
-  }
-</style>
-
-
-
-
-  
- <!-- 🟢 Bloc spécifique BTS MOS Sécurité -->
-<div id="mos-section" class="mos" style="display:none; margin-top:20px;">
-
-  <h4>À cocher, une seule case possible :</h4>
-
-  <label>
-    <input type="radio" name="bac_status" value="bac_ms">
-    Je suis titulaire d’un Bac Pro MS métiers de la sécurité
-  </label><br>
-
-  <label>
-    <input type="radio" name="bac_status" value="bac_ms_en_cours">
-    Je passe mon Bac Pro MS métiers de la sécurité en 2026
-  </label><br>
-
-  <label>
-    <input type="radio" name="bac_status" value="carte_cnaps">
-    Je suis déjà titulaire d’une carte professionnelle CNAPS
-  </label><br>
-
-  <label>
-    <input type="radio" name="bac_status" value="autre">
-    Aucun de ces cas (bac général, bac technologique, bac pro hors MS, autre)
-  </label>
-
-  <!-- Zone affichée si "autre" -->
-  <div id="bloc-bac-autre" style="display:none; margin-top:10px;">
-    <label>
-      Préciser (si autre) :
-      <input type="text" name="bac_autre" placeholder="Ex : Bac général STMG">
-    </label>
-  </div>
-
-  <!-- Bloc explicatif + choix APS -->
-  <div id="mos-explication" style="display:none; margin-top:15px; background:#fff8e1; padding:15px; border-left:4px solid #f4c45a; border-radius:8px;">
-    <p>
-      Pour accéder à notre <strong>BTS Management Opérationnel de la Sécurité (MOS)</strong>,
-      vous devez être titulaire d’une <strong>carte professionnelle “agent de sécurité privée”</strong>
-      délivrée par le Ministère de l’intérieur (CNAPS).
-    </p>
-    <p>
-      Cette carte professionnelle vous sera demandée par votre future entreprise dans le cadre de l’alternance.
-    </p>
-    <p>
-      ➡️ <a href="https://www.canva.com/design/DAFyt9PCLzk/crHFPARJiocR1wDYdodMJw/view?utm_content=DAFyt9PCLzk&utm_campaign=designshare&utm_medium=link&utm_source=editor"
-      target="_blank" style="color:#007bff; font-weight:600;">Plus d’infos sur le CNAPS ici</a>
-    </p>
-    <p>
-      Cette formation est proposée au tarif <strong>950 € (apprenti)</strong> au lieu de 1650 €.
-      Le chèque sera à envoyer par courrier lorsque nous aurons confirmé votre inscription.
-    </p>
-
-<div id="bloc-aps-radios">
-  <p><strong>Souhaitez-vous suivre la formation APS ?</strong></p>
-
-  <label>
-    <input type="radio" name="aps_souhaitee" value="oui">
-    Oui, je souhaite suivre la formation agent de sécurité privée (APS)
-  </label><br>
-
-  <label>
-    <input type="radio" name="aps_souhaitee" value="non">
-    Non, je ne souhaite pas suivre cette formation
-  </label>
-</div>
-
-
-<!-- Bloc session APS -->
-<div id="bloc-aps-session" style="display:none; margin-top:10px;">
-  <p><strong>Choisissez votre session :</strong></p>
-  <label>
-    <input type="radio" name="aps_session" value="puget">
-    8 juillet → 12 août 2026 — Intégrale Academy (Puget-sur-Argens)
-  </label><br>
-  <label>
-    <input type="radio" name="aps_session" value="autre">
-    7 septembre → 9 octobre 2026 — Intégrale Academy (Puget-sur-Argens)
-  </label>
-</div>
-
-<!-- Bloc raison NON APS -->
-<div id="raison-non-aps" style="display:none; margin-top:10px;">
-  <label for="raison_aps"><strong>Pour quelle raison ?</strong></label>
-  <textarea name="raison_aps" rows="2" placeholder="Merci de préciser votre raison ici..."></textarea>
-</div>
-
-  </div>
-</div>
-
-
-
-  <!-- Boutons d'étape -->
-<div class="actions nav-global">
-  <button type="button" class="btn prev">⬅️ Étape précédente</button>
-  <button type="button" class="btn primary next">➡️ Étape suivante</button>
-  <button type="button" class="btn save">💾 Enregistrer et reprendre plus tard</button>
-</div>
-
-</div> <!-- fin tab2 -->
-
-
- <!-- 🧩 Étape 3 -->
-<div id="tab3" class="tab">
-  <div class="grid">
-    <label>Baccalauréat
-      <select name="baccalaureat" required>
-        <option value="">—</option>
-        <option>Oui</option>
-        <option>Non</option>
-        <option>Prévu en 2026</option>
-      </select>
-    </label>
-    <label>Type de bac
-      <select name="bac_type">
-        <option value="">—</option>
-        <option>Général</option>
-        <option>Technologique</option>
-        <option>Professionnel</option>
-        <option>Autre</option>
-      </select>
-    </label>
-    <label>Si “Autre”, préciser <input name="bac_autre"></label>
-    <label>Permis B
-      <select name="permis_b">
-        <option value="">—</option>
-        <option>Oui</option>
-        <option>Non</option>
-      </select>
-    </label>
-  </div>
-
-  <!-- 🔹 Contrat d'apprentissage - Entreprise d'accueil -->
-  <div class="apprentissage-box">
-    <h3>📑 Contrat d’apprentissage – Entreprise d’accueil</h3>
-
-    <label>J’ai déjà trouvé une entreprise pour mon alternance :</label>
-    <div class="radio-row">
-      <label><input type="radio" name="entreprise_trouvee" value="oui" required> Oui</label>
-      <label><input type="radio" name="entreprise_trouvee" value="non" required> Non</label>
-    </div>
-
-    <label>J’ai déjà commencé mes recherches :</label>
-    <div class="radio-row">
-      <label><input type="radio" name="recherches_commencees" value="oui" required> Oui</label>
-      <label><input type="radio" name="recherches_commencees" value="non" required> Non</label>
-    </div>
-
-    <!-- === 🤝 ENCADRÉ PÔLE ALTERNANCE === -->
-    <div class="pole-alternance-box" style="margin-top:25px;background:#fff8e1;border:2px solid #f4c45a;border-radius:12px;padding:25px;">
-      <div style="display:flex;align-items:center;gap:15px;flex-wrap:wrap;">
-        <img src="/static/pole.png" alt="Pôle Alternance Île-de-France" style="height:65px;border-radius:10px;background:white;padding:6px;">
-        <div style="flex:1;">
-          <h3 style="margin:0;font-size:20px;color:#222;">🤝 Pôle Alternance Île-de-France</h3>
-          <p style="margin:6px 0 0;font-size:15px;color:#444;">
-  Notre partenaire <strong>Pôle Alternance</strong> vous accompagne dans votre recherche d’entreprise sur <strong>Paris</strong> et dans toute <strong>l’Île-de-France (75, 77, 78, 91, 92, 93, 94, 95)</strong>.<br>
-  Dès validation de votre pré-inscription, ils peuvent vous aider à trouver une entreprise d’accueil.
-</p>
+            <button type="button" class="next-btn">Continuer</button>
         </div>
-      </div>
-
-      <div style="margin-top:20px;">
-        <label style="display:block;margin-bottom:8px;font-size:15px;">
-          <input type="radio" name="souhaite_accompagnement" value="oui" required>
-          Je souhaite être accompagné pour trouver une entreprise
-        </label>
-        <label style="display:block;font-size:15px;">
-          <input type="radio" name="souhaite_accompagnement" value="non">
-          Je préfère chercher une entreprise par moi-même
-        </label>
-      </div>
-    </div>
-
-    <div class="apprentissage-info" style="margin-top:25px;">
-      💡 <strong>Rassurez-vous&nbsp;!</strong> Vous aurez jusqu’au <strong>15 décembre 2026</strong> pour trouver votre entreprise d’accueil.<br>
-      Les cours commenceront en <strong>septembre</strong>, même si vous n'avez pas signé de contrat d'apprentissage.<br>
-      La plupart des étudiants trouvent leur entreprise dans les semaines qui suivent la rentrée, entre <strong>octobre et novembre</strong>.
-    </div>
-  </div> <!-- fin apprentissage-box -->
-
-  <div class="actions nav-global">
-    <button type="button" class="btn prev">⬅️ Étape précédente</button>
-    <button type="button" class="btn primary next">➡️ Étape suivante</button>
-    <button type="button" class="btn save">💾 Enregistrer et reprendre plus tard</button>
-  </div>
-</div> <!-- fin tab3 -->
 
 
+        <!-- ==========================
+             ÉTAPE 2 : DOCUMENTS
+        =========================== -->
+        <div class="tab-content step-2">
 
+            <p class="info-text">Veuillez téléverser les documents obligatoires pour la constitution de votre dossier SSIAP.</p>
 
+            <div class="form-group">
+                <label>Pièce d’identité (PDF/JPG/PNG) *</label>
+                <input type="file" name="identite" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
 
-     
-<!-- ===================================================== -->
-<!-- 💬 ÉTAPE 4 : PROJET MOTIVÉ (version finale élégante) -->
-<!-- ===================================================== -->
-<div class="tab" id="tab4">
-  <h3>💬 Projet motivé</h3>
-  <p>
-    Cette étape nous permet de mieux connaître vos motivations et votre profil. 
-    Répondez simplement et sincèrement.
-  </p>
+            <div class="form-group">
+                <label>Certificat médical (PDF/JPG/PNG) *</label>
+                <input type="file" name="certificat" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
 
-  <label>
-    Qu’est-ce qui vous motive à suivre cette formation ?
-    <textarea name="projet_pourquoi" placeholder="Expliquez en quelques lignes ce qui vous attire dans cette formation (ex : débouchés, projet professionnel, reconversion...)"></textarea>
-  </label>
+            <div class="form-group">
+                <label>Test de français (PDF/JPG/PNG) *</label>
+                <input type="file" name="test_francais" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
 
-  <label>
-    Quels sont vos projets ou objectifs après l’obtention de votre diplôme ?
-    <textarea name="projet_objectif" placeholder="Exemple : poursuivre mes études, trouver un emploi rapidement, créer mon entreprise..."></textarea>
-  </label>
+            <div class="form-group">
+                <label>Photo d'identité (PDF/JPG/PNG) — optionnel</label>
+                <input type="file" name="photo" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
 
-  <hr>
-
-  <h4>💡 Vos principales qualités</h4>
-  <p>Sélectionnez celles qui vous représentent le mieux :</p>
-  <div class="etiquettes">
-    <label><input type="checkbox" name="qualites[]" value="rigoureux"> Rigueur</label>
-    <label><input type="checkbox" name="qualites[]" value="organise"> Organisation</label>
-    <label><input type="checkbox" name="qualites[]" value="autonome"> Autonomie</label>
-    <label><input type="checkbox" name="qualites[]" value="communication"> Communication</label>
-    <label><input type="checkbox" name="qualites[]" value="esprit_equipe"> Esprit d’équipe</label>
-    <label><input type="checkbox" name="qualites[]" value="curieux"> Curiosité</label>
-    <label><input type="checkbox" name="qualites[]" value="leadership"> Leadership</label>
-    <label><input type="checkbox" name="qualites[]" value="creatif"> Créativité</label>
-    <label><input type="checkbox" name="qualites[]" value="empathique"> Empathie</label>
-    <label><input type="checkbox" name="qualites[]" value="serieux"> Sérieux</label>
-  </div>
-
-  <hr>
-
-  <h4>🚀 Ce qui vous motive le plus dans vos études ou votre futur métier</h4>
-  <div class="etiquettes">
-    <label><input type="checkbox" name="motivation[]" value="reussite"> La réussite personnelle et professionnelle</label>
-    <label><input type="checkbox" name="motivation[]" value="stabilite"> La stabilité et la sécurité de l’emploi</label>
-    <label><input type="checkbox" name="motivation[]" value="utilite"> Être utile et aider les autres</label>
-    <label><input type="checkbox" name="motivation[]" value="defis"> Les défis et les responsabilités</label>
-    <label><input type="checkbox" name="motivation[]" value="contact"> Le contact humain et le travail d’équipe</label>
-    <label><input type="checkbox" name="motivation[]" value="innovation"> L’innovation et les nouvelles technologies</label>
-    <label><input type="checkbox" name="motivation[]" value="evolution"> Les perspectives d’évolution</label>
-    <label><input type="checkbox" name="motivation[]" value="apprentissage"> L’envie d’apprendre et de me perfectionner</label>
-  </div>
-
-  <hr>
-
-  <h4>💼 Ce que vous recherchez avant tout dans votre futur métier</h4>
-  <div class="etiquettes">
-    <label><input type="checkbox" name="valeurs[]" value="salaire"> Un bon salaire et des avantages</label>
-    <label><input type="checkbox" name="valeurs[]" value="sens"> Un métier qui a du sens</label>
-    <label><input type="checkbox" name="valeurs[]" value="contact"> Être en contact avec le public</label>
-    <label><input type="checkbox" name="valeurs[]" value="mobilite"> Pouvoir bouger et voyager</label>
-    <label><input type="checkbox" name="valeurs[]" value="stabilite"> La stabilité et la sécurité de l’emploi</label>
-    <label><input type="checkbox" name="valeurs[]" value="responsabilite"> Des responsabilités importantes</label>
-    <label><input type="checkbox" name="valeurs[]" value="autonomie"> Travailler de manière autonome</label>
-    <label><input type="checkbox" name="valeurs[]" value="equipe"> Un bon esprit d’équipe</label>
-  </div>
-
-  <hr>
-
-  <h4>🧭 Votre manière de travailler</h4>
-  <div class="etiquettes">
-    <label><input type="checkbox" name="travail[]" value="methodique"> Je suis méthodique et j’aime planifier</label>
-    <label><input type="checkbox" name="travail[]" value="pratique"> J’apprends mieux en pratiquant</label>
-    <label><input type="checkbox" name="travail[]" value="collaboratif"> J’aime travailler en groupe</label>
-    <label><input type="checkbox" name="travail[]" value="independant"> Je préfère travailler seul(e)</label>
-    <label><input type="checkbox" name="travail[]" value="creatif"> J’aime proposer des idées nouvelles</label>
-    <label><input type="checkbox" name="travail[]" value="objectif"> Je me fixe des objectifs précis</label>
-  </div>
-
-  <hr>
-
-  <label>
-    Comment vous décririez-vous en quelques mots ?
-    <textarea name="projet_passions" placeholder="Parlez un peu de vous : vos passions, votre personnalité, vos valeurs, votre manière de travailler..."></textarea>
-  </label>
-
-  <div class="actions nav-global">
-    <button type="button" class="btn prev">⬅️ Étape précédente</button>
-    <button type="button" class="btn primary next">➡️ Étape suivante</button>
-    <button type="button" class="btn save">💾 Enregistrer et reprendre plus tard</button>
-  </div>
-</div>
-
-
-
-<!-- 📎 Étape 5 -->
-<div id="tab5" class="tab">
-
-
-  <h3 style="text-align:center; color:#111; border-bottom:3px solid #f4c45a; padding-bottom:8px; margin-bottom:25px;">
-    📎 Pièces justificatives à transmettre
-  </h3>
-
-  <div class="grid">
-
-    <!-- 🪪 Carte d’identité / Passeport -->
-    <div class="justif-block">
-      <h4>🪪 Carte d’identité / Passeport</h4>
-      <div class="justif-inner">
-        <label>Recto (obligatoire)
-          <input type="file" name="ci" accept="application/pdf,image/*" required>
-        </label>
-        <label>Verso (facultatif)
-          <input type="file" name="ci2" accept="application/pdf,image/*">
-        </label>
-      </div>
-    </div>
-
-    <!-- 📸 Photo d’identité -->
-    <div class="photo-block">
-      <h4>📸 Photo d’identité</h4>
-      <div class="photo-inner">
-        <div class="photo-upload">
-          <label>Importer votre photo :
-            <input type="file" name="photo" accept="image/*" required>
-          </label>
+            <div class="buttons">
+                <button type="button" class="prev-btn">Retour</button>
+                <button type="button" class="next-btn">Continuer</button>
+            </div>
         </div>
-        <div class="photo-example">
-          <img src="{{ url_for('static', filename='photo-exemple.png') }}" alt="Exemples de photos" />
-          <p><span class="ok">✅ Photo nette, fond neutre</span> — <span class="no">❌ Pas de selfie ni d’arrière-plan visible</span></p>
+
+
+        <!-- ==========================
+             ÉTAPE 3 : RÉCAP
+        =========================== -->
+        <div class="tab-content step-3">
+            <h3>Vérification des informations</h3>
+            <p>Merci de vérifier les informations ci-dessous avant validation.</p>
+
+            <div id="recap"></div>
+
+            <div class="buttons">
+                <button type="button" class="prev-btn">Retour</button>
+                <button type="submit" class="submit-btn">Envoyer mon dossier</button>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 💳 Carte Vitale -->
-    <div class="justif-block">
-      <h4>💳 Carte Vitale (PDF uniquement)</h4>
-      <label><input type="file" name="carte_vitale" accept="application/pdf" required></label>
-    </div>
-
-    <!-- 📄 CV -->
-    <div class="justif-block">
-      <h4>📄 CV (PDF)</h4>
-      <label><input type="file" name="cv" accept="application/pdf" required></label>
-    </div>
-
-    <!-- 🖋️ Lettre de motivation -->
-    <div class="justif-block">
-      <h4>🖋️ Lettre de motivation (PDF)</h4>
-      <label><input type="file" name="lm" accept="application/pdf" required></label>
-    </div>
-
-  </div>
-
-<div class="actions nav-global">
-  <button type="button" class="btn prev">⬅️ Étape précédente</button>
-  <button type="button" class="btn primary next">➡️ Étape suivante</button>
-  <button type="button" class="btn save">💾 Enregistrer et reprendre plus tard</button>
-</div>
+    </form>
 
 </div>
-
-    
-<!-- === ÉTAPE 6 : RÉCAPITULATIF === -->
-<div class="tab" id="step6">
-  <h2>🧾 Étape 6 : Récapitulatif de votre inscription</h2>
-  <p class="text-muted">Vérifiez attentivement vos informations avant d’envoyer votre dossier.</p>
-
-  <div id="recap-content" class="recap-box" style="background:#f8fdf7;border:1px solid #cde9cc;border-radius:12px;padding:25px;margin-top:20px;"></div>
-
-  </div>
-</div>
-
-
-
-  </form>
-</div>
-
-<script>
-// --- Vérification du NIR (avec 2A / 2B autorisés et conservés) ---
-function verifierNumSecu() {
-  const input = document.getElementById("num_secu");
-  const help = document.getElementById("numSecuHelp");
-  let val = input.value.trim().toUpperCase();
-  let nir = val.replace(/\s+/g, "");
-
-  // ✅ Autoriser chiffres et lettres A/B
-  if (!/^[0-9AB]{13,15}$/.test(nir)) {
-    help.textContent = "❌ Format invalide — seuls chiffres et A/B sont autorisés (15 caractères attendus)";
-    help.style.color = "red";
-    input.style.borderColor = "red";
-    return false;
-  }
-
-  // 🔁 copie pour le calcul (convertit seulement temporairement 2A / 2B)
-  const nirCalc = nir.replace("2A", "19").replace("2B", "18");
-  const digits = nirCalc.replace(/\D/g, "");
-
-  if (digits.length !== 15) {
-    help.textContent = "❌ Numéro incomplet — 15 chiffres attendus (A/B acceptés pour la Corse)";
-    help.style.color = "red";
-    input.style.borderColor = "red";
-    return false;
-  }
-
-  // ✅ Vérification de la clé de contrôle
-  try {
-    const corps = digits.slice(0, 13);
-    const cle = parseInt(digits.slice(13, 15), 10);
-    const calc = 97n - (BigInt(corps) % 97n);
-    if (Number(calc) !== cle) {
-      help.textContent = "❌ Clé de contrôle incorrecte";
-      help.style.color = "red";
-      input.style.borderColor = "red";
-      return false;
-    }
-  } catch {
-    help.textContent = "❌ Format invalide";
-    help.style.color = "red";
-    input.style.borderColor = "red";
-    return false;
-  }
-
-  // ✅ Cohérence avec date de naissance et sexe
-  const dateInput = document.querySelector('input[name="date_naissance"]');
-  const sexeSelect = document.querySelector('select[name="sexe"]');
-  const s = parseInt(digits[0], 10);
-  const yy = digits.slice(1, 3);
-  const mm = digits.slice(3, 5);
-
-  if (dateInput && dateInput.value) {
-    const d = new Date(dateInput.value);
-    const yyExpected = String(d.getFullYear()).slice(-2);
-    const mmExpected = String(d.getMonth() + 1).padStart(2, "0");
-
-    if (yy !== yyExpected) {
-      help.textContent = `❌ Année ${yy} incohérente (attendu ${yyExpected})`;
-      help.style.color = "red";
-      input.style.borderColor = "red";
-      return false;
-    }
-
-    if (/^0[1-9]|1[0-2]$/.test(mm) && mm !== mmExpected) {
-      help.textContent = `❌ Mois ${mm} incohérent (attendu ${mmExpected})`;
-      help.style.color = "red";
-      input.style.borderColor = "red";
-      return false;
-    }
-  }
-
-  if (sexeSelect && sexeSelect.value) {
-    const valSexe = sexeSelect.value.toLowerCase();
-    if ((valSexe === "homme" && s !== 1) || (valSexe === "femme" && s !== 2)) {
-      help.textContent = "❌ Sexe incohérent avec le NIR";
-      help.style.color = "red";
-      input.style.borderColor = "red";
-      return false;
-    }
-  }
-
-  // ✅ Tout est bon
-  help.textContent = "✅ Numéro valide et cohérent";
-  help.style.color = "green";
-  input.style.borderColor = "#28a745";
-  return true;
-}
-
-// Vérification automatique à chaque saisie
-["input", "change"].forEach(evt => {
-  document.getElementById("num_secu")?.addEventListener(evt, verifierNumSecu);
-  document.querySelector('input[name="date_naissance"]')?.addEventListener(evt, verifierNumSecu);
-  document.querySelector('select[name="sexe"]')?.addEventListener(evt, verifierNumSecu);
-});
-</script>
-
-{% if saved_data %}
-<script>
-  const saved = {{ saved_data|tojson|safe }};
-  const step = {{ step|default(0) }};
-  document.addEventListener("DOMContentLoaded", () => {
-    if (saved) {
-      for (const [key, value] of Object.entries(saved)) {
-        const field = document.querySelector(`[name="${key}"]`);
-        if (field) {
-          if (field.type === "checkbox" || field.type === "radio") {
-            field.checked = (field.value === value || value === "on");
-          } else {
-            field.value = value;
-          }
-        }
-      }
-      if (typeof showStep === "function") {
-        showStep(step);
-      }
-      alert("✅ Vos informations précédentes ont été rechargées automatiquement.");
-    }
-  });
-</script>
-{% endif %}
-
-<style>
-/* --- Style validation et chargement --- */
-input.invalid, select.invalid, textarea.invalid {
-  border:2px solid red !important;
-  background:#ffeaea !important;
-}
-
-.sending-overlay {
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: rgba(255,255,255,0.9);
-  z-index: 9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-}
-.sending-box {
-  text-align:center;
-  background:#fff;
-  padding:30px 40px;
-  border-radius:12px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.2);
-  animation:fadeIn .3s ease;
-}
-.loader {
-  border:4px solid #eee;
-  border-top:4px solid #f4c45a;
-  border-radius:50%;
-  width:45px; height:45px;
-  margin:auto;
-  margin-bottom:20px;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin { 0%{transform:rotate(0);} 100%{transform:rotate(360deg);} }
-#bloc-resp-legal {
-  background:#fff8e1;
-  border:2px solid #f4c45a;
-  border-radius:10px;
-  padding:20px;
-  margin-top:20px;
-  box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
-#bloc-resp-legal h4 {
-  text-align:center;
-  margin-top:0;
-}
-</style>
-
-
 
 {% endblock %}
