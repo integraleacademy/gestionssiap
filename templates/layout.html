@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Mobile responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Plateforme SSIAP - Intégrale Academy</title>
+
+    <!-- Favicon (à remplacer si tu veux ton logo) -->
+    <link rel="icon" type="image/png" href="/static/logo.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <!-- Google Fonts (sobre, professionnel) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================================
+         TOPBAR AVEC LOGO
+    ================================= -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <img src="/static/logo.png" alt="Logo" class="logo-topbar">
+            <span class="topbar-title">Plateforme de gestion SSIAP</span>
+        </div>
+
+        {% if session.get('admin') %}
+        <div class="topbar-right">
+            <a href="/admin" class="topbar-link">Admin</a>
+            <a href="/logout" class="topbar-link">Déconnexion</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- ================================
+         CONTENU DE LA PAGE
+    ================================= -->
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- ================================
+         FOOTER
+    ================================= -->
+    <footer class="footer">
+        <p>© 2025 Intégrale Academy — Plateforme SSIAP</p>
+    </footer>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/main_front.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main_admin.js') }}"></script>
+
+</body>
+</html>
