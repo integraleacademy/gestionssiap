@@ -1,1514 +1,351 @@
-/* =======================================================
-   🌟 STYLES GLOBAUX
-   ======================================================= */
+/* ==========================================================
+   BASE
+   ========================================================== */
 
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f3f3f3;
-  margin: 0;
-  color: #222;
+    margin: 0;
+    padding: 0;
+    background: #f7f7f7;
+    color: #333;
+    font-family: 'Inter', sans-serif;
 }
-
-
-
-
-nav a {
-  color: white;
-  margin-left: 15px;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-nav a:hover {
-  color: #f4c45a;
-}
-
-/* =======================================================
-   🧾 CONTENEUR FORMULAIRE PUBLIC
-   ======================================================= */
 
 .container {
-  max-width: 1000px;
-  margin: 40px auto;
-  background: #fff;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 35px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-h2 {
-  text-align: center;
-  color: #111;
-  border-bottom: 3px solid #f4c45a;
-  padding-bottom: 10px;
-  margin-bottom: 25px;
+/* ==========================================================
+   TOPBAR
+   ========================================================== */
+
+.topbar {
+    width: 100%;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* =======================================================
-   🌈 STYLE FORMULAIRE – Pré-inscriptions BTS 2026
-   ======================================================= */
+.logo-topbar {
+    height: 45px;
+}
 
-/* --- Onglets + états visuels (unique) --- */
+.topbar-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-left: 15px;
+}
+
+.topbar-link {
+    color: #fff;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.topbar-right a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================
+   TITRES
+   ========================================================== */
+
+.page-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* ==========================================================
+   TABS FORMULAIRE
+   ========================================================== */
+
 .tabs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin: 20px 0 25px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.tabs::-webkit-scrollbar { height: 0; }
-
-.tabs button {
-  position: relative;
-  padding: 10px 14px;
-  padding-right: 32px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #eee;
-  font-weight: 600;
-  color: #222;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
 }
 
-.tabs button.active {
-  background: #f4c45a;
-  color: #000;
+.tab-btn {
+    width: 33%;
+    text-align: center;
+    padding: 12px 0;
+    border: none;
+    background: #e6e6e6;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
 }
 
-.tabs button.completed {
-  background-color: #d4edda !important;
-  color: #155724 !important;
-  transform: scale(1.02);
-}
-.tabs button.completed::after {
-  content: "✅";
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
+.tab-btn.active {
+    background: #2b5eff;
+    color: #fff;
 }
 
-.tabs button.locked {
-  background-color: #ddd !important;
-  color: #777 !important;
-  cursor: not-allowed;
+.tab-content {
+    display: none;
 }
 
-
-@media (max-width: 700px) {
-  .tabs { flex-wrap: wrap; }
+.tab-content.active {
+    display: block;
 }
 
-/* --- Barre de progression (au-dessus des onglets) --- */
-.progress-container {
-  width: 100%;
-  height: 8px;
-  background: #eee;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 0 0 8px;
+/* ==========================================================
+   FORMULAIRES
+   ========================================================== */
+
+.form-group {
+    margin-bottom: 18px;
 }
 
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #f4c45a, #d4a73a);
-  transition: width 0.4s ease;
+.form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
 }
 
-.progress-info {
-  text-align: right;
-  font-size: 14px;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 10px;
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="date"],
+.form-group input[type="file"],
+.form-group textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
 
-/* --- Grille propre pour les champs --- */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+.next-btn,
+.prev-btn,
+.submit-btn {
+    background: #2b5eff;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
 }
 
-label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 600;
-  color: #333;
+.prev-btn {
+    background: #8a8a8a;
+    margin-right: 10px;
 }
 
-input, select, textarea {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  margin-top: 4px;
-  transition: border-color 0.2s;
+.buttons {
+    margin-top: 25px;
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: #f4c45a;
-  outline: none;
-  box-shadow: 0 0 5px rgba(244, 196, 90, 0.4);
+/* ==========================================================
+   RÉCAP
+   ========================================================== */
+
+.recap-block {
+    background: #f0f0f0;
+    padding: 15px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
 }
 
-textarea {
-  resize: vertical;
+/* ==========================================================
+   CONFIRMATION
+   ========================================================== */
+
+.confirmation-box {
+    text-align: center;
 }
 
-/* --- Boutons --- */
-.btn {
-  background: #111;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+.confirm-text {
+    font-size: 17px;
+    margin-bottom: 15px;
 }
 
-.btn:hover { opacity: 0.85; }
-
-.btn.primary {
-  background: #f4c45a;
-  border: none;
-  color: #000;
-  font-weight: 700;
-  padding: 12px 24px;
-  border-radius: 8px;
+.btn-primary {
+    background: #2b5eff;
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 20px;
+    font-weight: 600;
 }
 
-.btn.primary:hover {
-  background: #ffda77;
-  transform: scale(1.05);
+/* ==========================================================
+   LOGIN
+   ========================================================== */
+
+.login-container {
+    max-width: 450px;
+    margin: 0 auto;
 }
 
-
-
-
-
-/* --- Actions navigation étapes --- */
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 30px;
-}
-.actions .btn { min-width: 180px; }
-
-/* --- Notices explicatives --- */
-.notice {
-  background: #fffaf0;
-  border-left: 5px solid #f4c45a;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 25px;
-  font-size: 15px;
+.login-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-/* --- Exemple photo --- */
-.notice img,
-#photoExample,
-.example-photo {
-  max-width: 220px;
-  height: auto;
-  display: inline-block;
-  margin-top: 10px;
+.alert {
+    background: #ffdede;
+    color: #b30000;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
 }
 
-.photo-help {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  flex-wrap: wrap;
+/* ==========================================================
+   TABLEAU ADMIN
+   ========================================================== */
+
+.table-wrapper {
+    overflow-x: auto;
 }
-
-.photo-help img {
-  max-width: 220px;
-  border-radius: 6px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-}
-
-/* --- Blocs conditionnels --- */
-.minor, .mos {
-  background: #f8f8f8;
-  border-left: 4px solid #f4c45a;
-  padding: 15px;
-  border-radius: 6px;
-  margin-top: 15px;
-}
-
-/* =======================================================
-   🎓 ADMINISTRATION – Intégrale Academy
-   ======================================================= */
-
-.admin-container {
-  width: 95vw; /* prend presque toute la largeur visible */
-  max-width: 1800px;
-  margin: 30px auto;
-  background: #fff;
-  padding: 25px 40px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  overflow-x: auto;
-}
-
-
-/* --- Barre d’outils --- */
-.toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  gap: 15px;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.filters input,
-.filters select {
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-/* =======================================================
-   📊 TABLEAU ADMIN COMPACT ET LISIBLE
-   ======================================================= */
 
 .admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  margin-top: 10px;
-  table-layout: auto;
-  white-space: nowrap;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
 }
 
-.admin-table thead {
-  background: #f4c45a;
-  color: #000;
-  font-weight: 700;
+.admin-table th {
+    background: #2b5eff;
+    color: #fff;
+    padding: 10px;
+    font-size: 15px;
 }
 
-.admin-table th,
 .admin-table td {
-  padding: 6px 5px;
-  border: 1px solid #ddd;
-  text-align: center;
-  vertical-align: middle;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
-
-.admin-table tr:nth-child(odd) { background: #ffffff; }
-.admin-table tr:nth-child(even) { background: #f6f6f6; }
 
 .admin-table td[contenteditable="true"] {
-  background: #fff8e1;
-  cursor: text;
+    background: #f7faff;
+    cursor: text;
 }
-.admin-table td[contenteditable="true"]:focus {
-  outline: 2px solid #f4c45a;
-}
-
-/* --- Statuts colorés --- */
-:root {
-  --preinscription: #7d7d7d;
-  --validee: #007bff;
-  --confirmee: #f4c45a;
-  --reconf_en_cours: #ff8c00;
-  --reconfirmee: #28a745;
-  --annulee: #d9534f;
-}
-
-.status-select {
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-.status-select:hover { transform: scale(1.05); }
-
-.status-select[value="preinscription"] { background: var(--preinscription); }
-.status-select[value="validee"] { background: var(--validee); }
-.status-select[value="confirmee"] { background: var(--confirmee); color: #111; }
-.status-select[value="reconf_en_cours"] { background: var(--reconf_en_cours); }
-.status-select[value="reconfirmee"] { background: var(--reconfirmee); }
-.status-select[value="annulee"] { background: var(--annulee); }
-
-/* --- Animation sur changement de statut --- */
-@keyframes flashRow {
-  0% { background: #dfffd8; }
-  100% { background: transparent; }
-}
-tr.status-updated { animation: flashRow 1.5s ease; }
-
-/* =======================================================
-   ✅ Correctifs affichage formulaire (tabs + radios)
-   ======================================================= */
-
-/* --- Cacher les onglets non actifs --- */
-.tab {
-  display: none;
-}
-.tab.active {
-  display: block;
-}
-
-/* --- Alignement propre des boutons radio / cases à cocher --- */
-.mos label,
-#mos-explication > label,
-#bloc-aps-session label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  line-height: 1.4;
-  margin: 6px 0;
-}
-
-.mos input[type="radio"],
-.mos input[type="checkbox"],
-#mos-explication input[type="checkbox"],
-#bloc-aps-session input[type="radio"] {
-  margin: 0;
-  transform: scale(1.15);
-  accent-color: #f4c45a; /* bouton doré */
-}
-
-/* --- Amélioration lisibilité bloc MOS / APS --- */
-#mos-explication,
-#bloc-aps-session {
-  background: #fff8e1;
-  border-left: 4px solid #f4c45a;
-  border-radius: 8px;
-  padding: 15px 18px;
-}
-
-/* --- Petit effet survol premium doré --- */
-.mos input[type="radio"]:hover,
-.mos input[type="checkbox"]:hover,
-#mos-explication input:hover,
-#bloc-aps-session input:hover {
-  box-shadow: 0 0 6px rgba(244, 196, 90, 0.6);
-  cursor: pointer;
-}
-
-/* =======================================================
-   🖼️ Bloc photo d'identité (style carte Intégrale Academy)
-   ======================================================= */
-.photo-block {
-  background: #fffaf0;
-  border-left: 5px solid #f4c45a;
-  border-radius: 10px;
-  padding: 20px 25px;
-  margin: 20px 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.photo-block h4 {
-  margin-top: 0;
-  color: #222;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.photo-inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 25px;
-  align-items: flex-start;
-}
-
-.photo-upload label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 600;
-  color: #333;
-}
-
-.photo-example img {
-  max-width: 230px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-.photo-example p {
-  font-size: 14px;
-  color: #444;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.photo-example .ok {
-  color: #28a745;
-  font-weight: 600;
-}
-
-.photo-example .no {
-  color: #d9534f;
-  font-weight: 600;
-}
-
-/* =======================================================
-   🗂️ Bloc pièces justificatives harmonisé
-   ======================================================= */
-
-/* --- Encadré général harmonisé pour chaque document --- */
-.justif-block {
-  background: #fffaf0;
-  border-left: 5px solid #f4c45a;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 15px 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.justif-block h4 {
-  margin-top: 0;
-  color: #222;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.justif-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.justif-inner label {
-  font-weight: 600;
-  color: #333;
-}
-
-/* --- Réorganisation plus fluide du bloc Pièces --- */
-#tab5 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-}
-
-/* --- Ajustement spécifique pour la photo et autres blocs --- */
-.photo-block,
-.justif-block {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.photo-block:hover,
-.justif-block:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* --- Responsive --- */
-@media (max-width: 700px) {
-  #tab5 .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* =======================================================
-   🧾 Icônes à gauche des encadrés de justificatifs
-   ======================================================= */
-.justif-block {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding-left: 60px; /* espace pour l’icône */
-}
-
-.justif-block::before {
-  content: attr(data-icon);
-  position: absolute;
-  left: 20px;
-  top: 22px;
-  font-size: 28px;
-  color: #f4c45a;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
-}
-
-/* 🌟 Nouvelle modale claire */
-.modal {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-.modal.hidden { display: none; }
-
-.modal-content {
-  background: #fff;
-  padding: 25px 30px;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-.modal-content h3 {
-  margin-top: 0;
-  text-align: center;
-  color: #111;
-  border-bottom: 2px solid #f4c45a;
-  padding-bottom: 10px;
-}
-
-.modal-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.comment-save {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-}
-
-/* =======================================================
-   🎨 Amélioration modale admin (couleurs boutons + largeur tableau)
-   ======================================================= */
-
-/* --- Tableau sur toute la largeur --- */
-.admin-wrapper {
-  max-width: 100%;
-  margin: 20px auto;
-  padding: 0 20px;
-}
-
-.table-container {
-  background: #fff;
-  border-radius: 10px;
-  padding: 15px 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  overflow-x: auto;
-}
-
-/* --- Boutons colorés dans la modale --- */
-.btn.pdf {
-  background: #f4c45a;
-  color: #111;
-  font-weight: 700;
-  border: none;
-}
-
-.btn.pdf:hover {
-  background: #ffd97a;
-}
-
-.btn.reconfirm {
-  background: #007bff;
-  color: #fff;
-}
-
-.btn.reconfirm:hover {
-  background: #1a86ff;
-}
-
-.btn.danger {
-  background: #d9534f;
-  color: #fff;
-}
-
-.btn.danger:hover {
-  background: #c82333;
-}
-
-/* --- Boutons dans la modale : taille uniforme et arrondis doux --- */
-.modal-actions .btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: background 0.3s;
-}
-
-/* --- Supprime le soulignement du lien PDF --- */
-.modal-actions a,
-.modal-actions button {
-  text-decoration: none;
-}
-
-/* =======================================================
-   📎 STYLE – MODALE PIÈCES JUSTIFICATIVES
-   ======================================================= */
-#filesModal .modal-content {
-  background: #fff;
-  border-radius: 10px;
-  padding: 25px 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  border: 2px solid #f4c45a;
-}
-
-.files-list {
-  margin-top: 15px;
-}
-
-.file-item {
-  background: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px 15px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s ease;
-}
-
-.file-item:hover {
-  background: #fff8e1;
-  transform: translateY(-2px);
-}
-
-.file-header a {
-  color: #0078d7;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.file-header a:hover {
-  text-decoration: underline;
-}
-
-.file-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.file-actions .btn.small {
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 6px;
-}
-
-.file-actions .btn.small.ok {
-  background: #28a745;
-  color: white;
-}
-
-.file-actions .btn.small.danger {
-  background: #d9534f;
-  color: white;
-}
-
-/* === Pleine largeur pour l'administration === */
-.admin-full {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  background: #f3f3f3;
-}
-
-.admin-wrapper {
-  width: 96%;
-  max-width: 1900px;
-  margin: 30px auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 30px 40px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-/* Boutons d'action dans le tableau admin */
-.admin-table .btn.small {
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin: 0 3px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* Barre de navigation d'étape harmonisée */
-.actions.nav-global {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 35px;
-}
-.btn.save {
-  background: #fff;
-  border: 2px solid #f4c45a;
-  color: #111;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-.btn.save:hover {
-  background: #f4c45a;
-  color: #000;
-  transform: scale(1.05);
-}
-.btn.prev, .btn.primary, .btn.save { min-width: 190px; }
-
-/* =======================================================
-   ✅ Message de confirmation / erreur dynamique
-   ======================================================= */
-.flash-message {
-  text-align: center;
-  padding: 14px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 20px;
-  transition: opacity 0.5s ease, transform 0.5s ease;
-  opacity: 0;
-  transform: translateY(-15px);
-}
-
-.flash-message.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.flash-message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.flash-message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.flash-message.hidden {
-  display: none;
-}
-
-/* =======================================================
-   🎯 Correctifs visuels page ADMIN
-   ======================================================= */
-
-/* --- Boutons Export / Réinitialiser harmonisés --- */
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.admin-header .admin-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.admin-header .admin-actions .btn.secondary {
-  background: #fff;
-  border: 2px solid #f4c45a;
-  color: #111;
-  font-weight: 600;
-  text-decoration: none !important;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
 
-.admin-header .admin-actions .btn.secondary:hover {
-  background: #f4c45a;
-  color: #000;
+.delete-btn {
+    color: red;
+    font-size: 20px;
+    text-decoration: none;
 }
 
-/* --- Bouton Réinitialiser dans la barre de filtre --- */
-.filter-bar .btn.secondary {
-  background: #fff;
-  border: 2px solid #ccc;
-  color: #333;
-  font-weight: 600;
-  text-decoration: none !important;
-  padding: 8px 14px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-.filter-bar .btn.secondary:hover {
-  background: #eee;
-}
-
-/* --- Étiquettes alignées sur une seule ligne --- */
-.etiquettes {
-  white-space: nowrap;
-}
-.etiquettes label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-right: 10px;
-  font-size: 13px;
-}
-
-/* --- Bouton ACTIONS dans tableau --- */
-.admin-table .action-btn {
-  background: #111;
-  color: #fff;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.admin-table .action-btn:hover {
-  background: #f4c45a;
-  color: #111;
-  transform: scale(1.05);
-}
-
-/* --- Nettoyage visuel tableau --- */
-.admin-table th, .admin-table td {
-  padding: 8px 10px;
-  vertical-align: middle;
-}
-
-/* --- Supprime soulignement sur tous les boutons/lien dans admin --- */
-.admin-wrapper a, .admin-wrapper button {
-  text-decoration: none !important;
-}
-
-/* --- Filtre aligné proprement --- */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-#formation-info h4 {
-  margin-top: 0;
-  color: #111;
-}
-#formation-info p {
-  margin: 6px 0;
-  color: #333;
-}
-
-/* =====================================================
-   🗑️ Bouton "Vider la base"
-   ===================================================== */
-.btn.danger {
-  background: #c0392b;
-  color: #fff;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s ease;
-}
-
-.btn.danger:hover {
-  background: #e74c3c;
-}
-
-/* Alignement du bouton avec les autres dans l'entête admin */
-.admin-actions form {
-  display: inline-block;
-  margin-left: 10px;
-  vertical-align: middle;
-}
-
-/* Message de confirmation (flash message Flask) */
-.flash {
-  padding: 10px 14px;
-  margin: 15px 0;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.flash.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-.flash.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-/* ===== Espace Candidat ===== */
-.candidate-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-}
-
-.candidate-container h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.candidate-container .subtitle {
-  text-align: center;
-  color: #555;
-  margin-bottom: 30px;
-}
-
-.card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
-}
-
-.commentaire {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 12px;
-  border: 1px solid #ddd;
-}
-
-.statut {
-  font-weight: 600;
-  color: #333;
-}
-
-.statut.validee { color: #1a73e8; }
-.statut.confirmee { color: #28a745; }
-.statut.annulee { color: #d93025; }
-.statut.docs_non_conformes { color: #e67e22; }
-
-/* =======================================================
-   🎓 MAIN SPÉCIFIQUE À L'ESPACE CANDIDAT
-   ======================================================= */
-
-main.container.candidat {
-  max-width: 1800px;          /* largeur élargie */
-  background: transparent;    /* le fond blanc est déjà géré par .candidat-container */
-  padding: 0;                 /* plus de marge interne */
-  box-shadow: none;           /* pas d’ombre sur le container global */
-  border-radius: 0;           /* angles droits */
-}
-
-.btn.small.danger {
-  background-color: #c0392b;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-.btn.small.danger:hover {
-  background-color: #e74c3c;
-}
-
-/* === Harmonisation de la page Parcoursup === */
-.parcoursup-page .admin-wrapper {
-  width: 96%;
-  max-width: 1900px;
-  margin: 30px auto;
-  background: #fff;
-  border-radius: 12px;
-  padding: 30px 40px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-/* ======= Stats Parcoursup ======= */
-.stats-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 25px;
-}
-.stat-card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-.stat-card:hover {
-  transform: scale(1.04);
-}
-.stat-card h3 {
-  font-size: 1.8em;
-  margin: 0;
-}
-.stat-card p {
-  font-size: 0.9em;
-  color: #666;
-}
-
-
-/* === Infobulles sur les icônes Mail / SMS === */
-.status-icon {
-  display: inline-block;
-  font-size: 1.1rem;
-  cursor: help;
-  transition: transform 0.15s ease;
-}
-
-.status-icon.ok { color: #2ecc71; }    /* vert */
-.status-icon.fail { color: #e74c3c; }  /* rouge */
-
-.status-icon:hover {
-  transform: scale(1.2);
-}
-
-.timeline {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.log-item {
-  display: flex;
-  align-items: flex-start;
-  background: #f9f9f9;
-  border: 1px solid #eee;
-  border-left: 4px solid #2ecc71;
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.log-item:hover {
-  background: #f1fdf1;
-}
-
-.log-icon {
-  font-size: 18px;
-  margin-right: 10px;
-  margin-top: 2px;
-}
-
-.log-content {
-  flex: 1;
-}
-
-.log-message {
-  font-weight: 500;
-  color: #333;
-}
-
-.log-date {
-  font-size: 12px;
-  color: #888;
-  margin-top: 2px;
-}
-
-/* === Bloc Assistance (centré et clair) === */
-.support-box {
-  margin-top: 28px;
-  padding: 22px;
-  border-radius: 14px;
-  background: #f2fcf5;
-  border: 1px solid #b7e6c2;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-.support-content h4 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: #0b5132;
-}
-.support-content p {
-  margin: 6px 0;
-  font-size: 15px;
-  color: #333;
-}
-.support-btn {
-  display: inline-block;
-  margin: 10px 0;
-  padding: 8px 20px;
-  background-color: #0d8050;
-  color: white;
-  border-radius: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-.support-btn:hover {
-  background-color: #0a6640;
-}
-.support-phone {
-  font-weight: 500;
-  color: #0b5132;
-  margin-top: 6px;
-}
-
-/* === Signature bas de page === */
-.footer-signature {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 14px;
-  color: #444;
-  opacity: 0.9;
-}
-.footer-signature strong {
-  color: #d60000; /* rouge profond pour bien contraster avec le cœur */
-}
-.footer-signature p {
-  margin: 0;
-}
-
-/* =======================================================
-   🧭 BARRE SUPÉRIEURE CENTRÉE – VERSION MODERNE
-   ======================================================= */
-
-.centered-topbar {
-  background: #f6f6f6; /* gris clair doux */
-  color: #222;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 0 12px;
-  border-bottom: 3px solid #f4c45a;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.brand-centered {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 6px;
-}
-
-.brand-centered .logo-centered {
-  height: 85px;
-  border-radius: 12px;
-}
-
-.brand-centered h1 {
-  font-size: 1.9em;
-  color: #111;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin: 4px 0 0;
-}
-
-.datetime {
-  align-self: flex-end;
-  margin-right: 40px;
-  font-weight: 600;
-  color: #555;
-  font-size: 0.95em;
-  margin-bottom: 8px;
-  white-space: nowrap;
-}
-
-/* =======================================================
-   ❤️ Pied de page
-   ======================================================= */
-.footer-signature {
-  background: #f7f7f7;
-  border-top: 2px solid #f4c45a;
-  text-align: center;
-  padding: 15px 10px;
-  font-size: 15px;
-  color: #444;
-  margin-top: 40px;
-}
-
-.footer-signature strong {
-  color: #d60000;
-}
-
-.footer-signature p {
-  margin: 0;
-}
-
-/* =======================================================
-   🎓 Amélioration visuelle du bloc BTS MOS / APS
-   ======================================================= */
-
-#mos-section {
-  background: #fffaf0;
-  border: 2px solid #f4c45a;
-  border-radius: 12px;
-  padding: 25px 30px;
-  margin-top: 25px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
-}
-
-#mos-section h3 {
-  margin-top: 0;
-  color: #222;
-  text-align: center;
-  font-size: 1.3em;
-  font-weight: 700;
-  margin-bottom: 18px;
-}
-
-#mos-section .mos label {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  transition: all 0.2s ease;
-}
-
-#mos-section .mos label:hover {
-  background: #fff8e1;
-  border-color: #f4c45a;
-}
-
-#mos-explication {
-  margin-top: 18px;
-  background: #fef8e7;
-  border-left: 4px solid #f4c45a;
-  padding: 15px 20px;
-  border-radius: 8px;
-  line-height: 1.5;
-}
-
-#bloc-aps-radios, #bloc-aps-session, #raison-non-aps {
-  margin-top: 15px;
-  background: #f9f9f9;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px 20px;
-}
-
-#raison-non-aps textarea {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  font-family: inherit;
-  resize: vertical;
-}
-
-/* =======================================================
-   💬 STYLE – Projet motivé (spécifique au formulaire public)
-   ======================================================= */
-.tab#tab4 .etiquettes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-  white-space: normal !important;
-}
-
-.tab#tab4 .etiquettes label {
-  background: #fffaf0;
-  border: 1px solid #f4c45a;
-  border-radius: 8px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.tab#tab4 .etiquettes input {
-  transform: scale(1.2);
-  margin-right: 6px;
-  accent-color: #f4c45a;
-}
-
-.tab#tab4 .etiquettes label:hover {
-  background: #fff3cd;
-}
+/* ==========================================================
+   STATUT SELECT
+   ========================================================== */
 
-.flash-popup {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: fadeIn .3s ease;
-}
-.flash-popup-content {
-  background: #fff;
-  padding: 25px 35px;
-  border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  max-width: 420px;
-  text-align: center;
-  animation: popIn .3s ease;
+.select-statut {
+    padding: 7px;
+    border-radius: 6px;
 }
-.flash-popup.success .flash-popup-content h3 {
-  color: #28a745;
-}
-.flash-popup button {
-  margin-top: 15px;
-  background: #f4c45a;
-  color: #111;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.flash-popup.hide { opacity: 0; transition: opacity 0.3s; }
-@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* =======================================================
-   🌟 Amélioration visuelle – Étape 4 : Projet motivé
-   ======================================================= */
-
-/* Titres harmonisés */
-#tab4 h3 {
-  text-align: center;
-  color: #111;
-  border-bottom: 3px solid #f4c45a;
-  padding-bottom: 8px;
-  margin-bottom: 25px;
-  font-size: 1.4em;
-  font-weight: 700;
+.select-statut[value="complet"] {
+    background: #d4edda;
 }
 
-#tab4 h4 {
-  color: #222;
-  font-weight: 700;
-  margin-top: 28px;
-  margin-bottom: 10px;
-  border-left: 4px solid #f4c45a;
-  padding-left: 10px;
+.select-statut[value="incomplet"] {
+    background: #fce4e4;
 }
 
-/* Paragraphe introductif */
-#tab4 > p {
-  font-size: 15px;
-  color: #444;
-  margin-bottom: 20px;
-}
+/* ==========================================================
+   CONFORMITÉ – ARRÊTÉ 2 MAI 2005
+   ========================================================== */
 
-/* Textareas plus confortables */
-#tab4 textarea {
-  min-height: 80px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  padding: 8px 10px;
-  transition: border-color 0.2s;
+.conformite-wrapper {
+    margin-top: 40px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
 }
-#tab4 textarea:focus {
-  border-color: #f4c45a;
-  box-shadow: 0 0 5px rgba(244,196,90,0.4);
-  outline: none;
-}
 
-/* Blocs d’étiquettes plus aérés */
-#tab4 .etiquettes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 12px 0 20px;
+.conformite-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-#tab4 .etiquettes label {
-  background: #fffdf4;
-  border: 1px solid #f4c45a;
-  border-radius: 10px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.25s ease;
-  display: inline-flex;
-  align-items: center;
+.conformite-table th {
+    background: #2b5eff;
+    color: #fff;
+    padding: 10px;
 }
 
-#tab4 .etiquettes input {
-  transform: scale(1.2);
-  margin-right: 8px;
-  accent-color: #f4c45a;
+.conformite-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
 }
 
-#tab4 .etiquettes label:hover {
-  background: #fff3cd;
-  box-shadow: 0 0 6px rgba(244,196,90,0.3);
+.conf-btns button {
+    padding: 7px 12px;
+    margin-right: 6px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-/* Lignes séparatrices plus douces */
-#tab4 hr {
-  border: none;
-  height: 1px;
-  background: #eee;
-  margin: 25px 0;
+.conf-btn.green {
+    background: #4caf50;
+    color: white;
 }
 
-/* 🔸 Bloc Apprentissage (nouvelle version) */
-.apprentissage-box {
-  margin-top: 30px;
-  padding: 25px 30px;
-  background: #fffdf3;
-  border: 2px solid #f4c45a;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+.conf-btn.orange {
+    background: #ffa726;
+    color: white;
 }
 
-.apprentissage-box h3 {
-  margin-top: 0;
-  color: #111;
-  border-bottom: 2px solid #f4c45a;
-  padding-bottom: 6px;
-  margin-bottom: 15px;
+.conf-btn.red {
+    background: #ef5350;
+    color: white;
 }
 
-.apprentissage-questions label {
-  font-weight: 600;
-  color: #222;
-}
+/* ==========================================================
+   FOOTER
+   ========================================================== */
 
-.radio-row {
-  display: flex;
-  gap: 25px;
-  margin: 6px 0 14px 5px;
+.footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    color: #777;
 }
 
-.radio-row label {
-  font-weight: normal;
-  color: #333;
-}
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
 
-.apprentissage-info {
-  margin-top: 15px;
-  background: #fff8e1;
-  border-left: 4px solid #f4c45a;
-  padding: 12px 16px;
-  border-radius: 8px;
-  color: #444;
-  line-height: 1.5;
-  font-size: 15px;
-}
+@media(max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 20px;
+    }
 
-td.editing {
-  outline: 2px solid #007bff;
-  background: #eef5ff !important;
+    .tab-btn {
+        font-size: 12px;
+        padding: 10px 0;
+    }
+
+    .topbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .topbar-title {
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }
-
